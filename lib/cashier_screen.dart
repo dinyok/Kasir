@@ -186,42 +186,46 @@ class CartSummary extends StatelessWidget {
       valueListenable: cartNotifier.cartLengthNotifier,
       builder: (context, cartLength, child) {
         return ValueListenableBuilder<double>(
-          valueListenable: cartNotifier.subtotal, // <-- Use public variable
+          valueListenable: cartNotifier.subtotal,
           builder: (context, subtotalValue, child) {
             if (cartLength == 0) {
-              return SizedBox.shrink(); // Do not display the cart if it's empty
+              return SizedBox.shrink();
             }
             return GestureDetector(
               onTap: () {
-              _showOrderDetails(context, cartNotifier);
+                _showOrderDetails(context, cartNotifier);
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                margin: EdgeInsets.all(8),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '$cartLength items in cart',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+              child: Material(
+                color: Colors.transparent, // Set the color of the Material to transparent
+                elevation: 0, // Set the elevation to 0 to remove shadow effect
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                  margin: EdgeInsets.all(8),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '$cartLength items in cart',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Rp ${subtotalValue.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      Text(
+                        'Rp ${subtotalValue.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );
@@ -240,88 +244,131 @@ class OrderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
-        heightFactor: 0.8,
-    child: Container(
-      height: MediaQuery.of(context).size.height * 0.8, // Make the OrderDetails widget taller
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Section 1: List of products and subtotal
-              Text(
-                'Order Details',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 300), // Limit the height of the product list
-                child: SingleChildScrollView(
+      heightFactor: 0.8,
+      child: Container(
+        height: MediaQuery
+            .of(context)
+            .size
+            .height * 0.8,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
                   child: Column(
-                    children: cartNotifier.cart.map((product) {
-                      return ValueListenableBuilder<int>(
-                        valueListenable: product.quantityNotifier,
-                        builder: (context, quantityValue, child) {
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Order Details',
+                        style: TextStyle(
+                            fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 16),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 250),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: cartNotifier.cart.map((product) {
+                              return ValueListenableBuilder<int>(
+                                valueListenable: product.quantityNotifier,
+                                builder: (context, quantityValue, child) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment
+                                            .spaceBetween,
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
+                                        children: [
+                                          Text('${product
+                                              .product['productName']}'),
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                icon: Icon(Icons.remove),
+                                                onPressed: () {
+                                                  cartNotifier.decreaseQuantity(
+                                                      product);
+                                                },
+                                              ),
+                                              Text('${quantityValue}'),
+                                              IconButton(
+                                                icon: Icon(Icons.add),
+                                                onPressed: () {
+                                                  cartNotifier.increaseQuantity(
+                                                      product);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          Text('Rp ${(product.product['sellingPrice'] * quantityValue).toStringAsFixed(2)}'),
+                                        ],
+                                      ),
+                                      Divider(),
+                                    ],
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      ValueListenableBuilder<double>(
+                        valueListenable: cartNotifier.subtotal,
+                        builder: (context, subtotalValue, child) {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.remove),
-                                    onPressed: () {
-                                      cartNotifier.decreaseQuantity(product);
-                                    },
-                                  ),
-                                  Text('${quantityValue}'), // Show the updated quantity
-                                  IconButton(
-                                    icon: Icon(Icons.add),
-                                    onPressed: () {
-                                      cartNotifier.increaseQuantity(product);
-                                    },
-                                  ),
-                                  Text('${product.product['productName']}'),
-                                ],
-                              ),
-                              Text('Rp ${product.product['sellingPrice']}'),
+                              Text('Subtotal:'),
+                              Text('Rp ${subtotalValue.toStringAsFixed(2)}'),
                             ],
                           );
                         },
-                      );
-                    }).toList(),
+                      ),
+                      SizedBox(height: 16),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            cartNotifier.clearCart();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Cancel Order',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          style: TextButton.styleFrom(backgroundColor: Colors
+                              .red),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                    ],
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-              Text('Subtotal: Rp ${cartNotifier.subtotal.value.toStringAsFixed(2)}'),
-              SizedBox(height: 16),
-
-              // Section 2: Cancel Order
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    cartNotifier.clearCart();
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Cancel Order',
-                    style: TextStyle(color: Colors.white),
+            ),
+            ValueListenableBuilder<double>(
+              valueListenable: cartNotifier.total,
+              builder: (context, totalValue, child) {
+                return Container(
+                  color: Colors.grey[200],
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total:'),
+                      Text('Rp ${totalValue.toStringAsFixed(2)}'),
+                    ],
                   ),
-                  style: TextButton.styleFrom(backgroundColor: Colors.red),
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // Section 3: Total and Pay button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Total: Rp ${cartNotifier.subtotal.value.toStringAsFixed(2)}'),
-                ],
-              ),
-              SizedBox(height: 16),
-              Center(
+                );
+              },
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: SizedBox(
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle the payment process here
@@ -329,11 +376,11 @@ class OrderDetails extends StatelessWidget {
                   child: Text('Pay'),
                 ),
               ),
-            ],
-          ),
+            ),
+            SizedBox(height: 16),
+          ],
         ),
       ),
-    ),
     );
   }
 }

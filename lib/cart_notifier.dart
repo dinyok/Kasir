@@ -6,11 +6,13 @@ class CartNotifier extends ChangeNotifier {
   List<CartItem> _cart = [];
   final ValueNotifier<double> subtotal;
   final ValueNotifier<double> total;
+  final ValueNotifier<double> priceDetail;
   final ValueNotifier<int> cartLengthNotifier;
 
   CartNotifier()
       : subtotal = ValueNotifier<double>(0),
         total = ValueNotifier<double>(0),
+        priceDetail = ValueNotifier<double>(0),
         cartLengthNotifier = ValueNotifier<int>(0);
 
   List<CartItem> get cart => _cart;
