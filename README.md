@@ -1,6 +1,6 @@
 # kasir
 
-A new kasir app
+A new half finished kasir app
 
 ## Getting Started
 
