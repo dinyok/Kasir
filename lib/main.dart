@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kasir/login_screen.dart';
 import 'package:kasir/welcome_page.dart'; // Import WelcomePage
 import 'package:kasir/profile_screen.dart';
 import 'package:kasir/product_management_screen.dart';
