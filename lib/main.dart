@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
       title: 'Stock Management and Cashier App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        accentColor: Colors.orange,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: AuthWrapper(),
